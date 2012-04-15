@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;
 
 public class Chiptune extends Applet implements MouseListener {
@@ -25,11 +26,14 @@ public class Chiptune extends Applet implements MouseListener {
 	int selectedTrack = 1;
 	Color selectedColor = Color.BLACK;
 	
+	Player player;
+	
 	public void init() {
 		Toolkit t = Toolkit.getDefaultToolkit();
 		Dimension d = t.getScreenSize();
 			
-		this.setSize(d.width-16, d.height);
+		//this.setSize(d.width-16, d.height);
+		this.setSize(1008, 600);
 			File folder;
 			try {
 				folder = new File("chiptune").getCanonicalFile();
@@ -37,7 +41,8 @@ public class Chiptune extends Applet implements MouseListener {
 				for(int i=0;i<listOfFiles.length;i++){
 			    	File f = listOfFiles[i];
 			    	if(f.isFile()) {
-			    		samples.add(new ChiptuneSample(f.getName()));	
+			    		String name = f.getName();
+			    		samples.add(new ChiptuneSample(name));	
 			    	}    	
 			    }
 			} catch (IOException e) {
@@ -51,6 +56,7 @@ public class Chiptune extends Applet implements MouseListener {
 		track2 = new Track(80, 340);
 		track3 = new Track(80, 380);
 		addMouseListener(this);
+		
 		super.init();
 	}
 	
@@ -85,29 +91,61 @@ public class Chiptune extends Applet implements MouseListener {
 		g.fillRect(30, 350, 20, 20);
 		g.fillRect(30, 390, 20, 20);
 		
-		// Main buttons
-		g.setColor(new Color(123, 143, 244));
-		g.fillRect(80, 450, 35, 35);
-		g.fillRect(130, 450, 35, 35);
-		g.fillRect(180, 450, 35, 35);
-		g.fillRect(835, 450, 35, 35);
-		g.fillRect(885, 450, 35, 35);
-		g.fillRect(935, 450, 35, 35);
-		g.setColor(Color.BLACK);
-		g.drawRect(80, 450, 35, 35);
-		g.drawRect(130, 450, 35, 35);
-		g.drawRect(180, 450, 35, 35);
-		g.drawRect(835, 450, 35, 35);
-		g.drawRect(885, 450, 35, 35);
-		g.drawRect(935, 450, 35, 35);
-		g.drawString("Play", 85, 473);
-		g.drawString("Stop", 135, 473);
-		g.drawString("Save", 185, 473);
-		g.drawString("Rand", 838, 473);
-		g.drawString("Add", 893, 473);
-		g.drawString("Del", 943, 473);
+		drawMainButton(g, "Play");
+		drawMainButton(g, "Stop");
+		drawMainButton(g, "Save");
+		drawMainButton(g, "Rand");
+		drawMainButton(g, "Add");
+		drawMainButton(g, "Del");
 		
 		paintSelectedTrackButton(g, 1);
+		super.paint(g);
+	}
+	
+	public void drawMainButton(Graphics g, String name) {
+		if(name.equals("Play")) {
+			g.setColor(Color.BLACK);
+			g.drawRect(80, 450, 35, 35);
+			g.setColor(new Color(123, 143, 244));
+			g.fillRect(80, 450, 35, 35);
+			g.setColor(Color.BLACK);
+			g.drawString("Play", 85, 473);
+		} else if(name.equals("Stop")) {
+			g.setColor(Color.BLACK);
+			g.drawRect(130, 450, 35, 35);
+			g.setColor(new Color(123, 143, 244));
+			g.fillRect(130, 450, 35, 35);
+			g.setColor(Color.BLACK);
+			g.drawString("Stop", 135, 473);
+		} else if(name.equals("Save")) {
+			g.setColor(Color.BLACK);
+			g.drawRect(180, 450, 35, 35);
+			g.setColor(new Color(123, 143, 244));
+			g.fillRect(180, 450, 35, 35);
+			g.setColor(Color.BLACK);
+			g.drawString("Save", 185, 473);
+		} else if(name.equals("Rand")) {
+			g.setColor(Color.BLACK);
+			g.drawRect(835, 450, 35, 35);
+			g.setColor(new Color(123, 143, 244));
+			g.fillRect(835, 450, 35, 35);
+			g.setColor(Color.BLACK);
+			g.drawString("Rand", 838, 473);
+		} else if(name.equals("Add")) {
+			g.setColor(Color.BLACK);
+			g.drawRect(885, 450, 35, 35);
+			g.setColor(new Color(123, 143, 244));
+			g.fillRect(885, 450, 35, 35);
+			g.setColor(Color.BLACK);
+			g.drawString("Add", 893, 473);
+		} else if(name.equals("Del")) {
+			g.setColor(Color.BLACK);
+		    g.drawRect(935, 450, 35, 35);
+			g.setColor(new Color(123, 143, 244));
+			g.fillRect(935, 450, 35, 35);
+			g.setColor(Color.BLACK);
+			g.drawString("Del", 943, 473);
+		}
 		super.paint(g);
 	}
 	
@@ -131,61 +169,6 @@ public class Chiptune extends Applet implements MouseListener {
 			g.setColor(Color.GRAY);
 			g.fillRect(30, 390, 20, 20);
 		}
-		super.paint(g);
-	}
-	
-	public void paintPressedMainButton(Graphics g, int state) {
-		switch(state) {
-			case 1:
-				g.setColor(new Color(29, 175, 219));
-				g.fillRect(80, 450, 35, 35);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				g.setColor(new Color(123, 143, 244));
-				g.fillRect(80, 450, 35, 35);
-				break;
-			case 2: 
-				g.setColor(new Color(29, 175, 219));
-				g.fillRect(130, 450, 35, 35);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				g.setColor(new Color(123, 143, 244));
-				g.fillRect(130, 450, 35, 35);
-				break;
-			case 3:
-				g.setColor(new Color(29, 175, 219));
-				g.fillRect(180, 450, 35, 35);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				g.setColor(new Color(123, 143, 244));
-				g.fillRect(180, 450, 35, 35);
-				break;
-			case 4:
-				g.setColor(new Color(29, 175, 219));
-				g.fillRect(230, 450, 35, 35);
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				g.setColor(new Color(123, 143, 244));
-				g.fillRect(230, 450, 35, 35);
-				break;
-		}
-		
 		super.paint(g);
 	}
 	
@@ -229,7 +212,7 @@ public class Chiptune extends Applet implements MouseListener {
 						   track1.addSamplesToTrack(track1_samples);
 						   track2.addSamplesToTrack(track2_samples);
 						   track3.addSamplesToTrack(track3_samples);
-						   (new Player(track1, track2, track3)).play();
+						   (player = new Player(track1, track2, track3)).play();
 						   System.out.println("Playing...");
 					   }
 					}
@@ -237,14 +220,22 @@ public class Chiptune extends Applet implements MouseListener {
 					if(arg0.getX() >= 130 && arg0.getY() >= 450 &&
 					   arg0.getX() <= 130+35 && arg0.getY() <= 450+35) {
 					   if(track1_samples.size() > 0) {
-					    //track1.interrupt();
-						//System.out.println("Stoped");
+						   player.stop();
+						   System.out.println("Stoping...");
 					   }
 					}
 					// Save Button
 					if(arg0.getX() >= 180 && arg0.getY() >= 450 &&
 				       arg0.getX() <= 180+35 && arg0.getY() <= 450+35) {
-						
+					   try {
+						WavAppender.append(track1_samples, track2_samples, track3_samples);
+					} catch (UnsupportedAudioFileException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					}
 					// Rand Button
 					if(arg0.getX() >= 835 && arg0.getY() >= 450 &&
@@ -315,7 +306,6 @@ public class Chiptune extends Applet implements MouseListener {
 					// Add Button
 					if(arg0.getX() >= 885 && arg0.getY() >= 450 &&
 				       arg0.getX() <= 885+35 && arg0.getY() <= 450+35) {
-						System.out.println("Add");
 						String s = JOptionPane.showInputDialog(null, "Vnesi število ponovitev zadnjega vzorca: ", 1);
 						int st = Integer.parseInt(s);
 						Track t = null;
@@ -349,8 +339,7 @@ public class Chiptune extends Applet implements MouseListener {
 							} else {
 								break;
 							}
-						}
-						
+						}		
 					}
 					// Del Button
 					if(arg0.getX() >= 935 && arg0.getY() >= 450 &&
@@ -373,20 +362,26 @@ public class Chiptune extends Applet implements MouseListener {
 						removeSamplesFromTrack(this.getGraphics());
 					}
 					// First Track
-					if(arg0.getX() >= 30 && arg0.getY() >=310 &&
-					   arg0.getX() <= 30+20 && arg0.getY() <= 310+20) {
+					if((arg0.getX() >= 30 && arg0.getY() >=310 &&
+					   arg0.getX() <= 30+20 && arg0.getY() <= 310+20) ||
+					   (arg0.getX() >= 80 && arg0.getY() >=300 &&
+					   arg0.getX() <= 970 && arg0.getY() <= 340)) {
 						this.paintSelectedTrackButton(this.getGraphics(),1);
 						selectedTrack = 1;
 					}
 					// Second Track
-					if(arg0.getX() >= 30 && arg0.getY() >= 350 &&
-					   arg0.getX() <= 30+20 && arg0.getY() <= 350+20) {
+					if((arg0.getX() >= 30 && arg0.getY() >= 350 &&
+					   arg0.getX() <= 30+20 && arg0.getY() <= 350+20) ||
+					   (arg0.getX() >= 80 && arg0.getY() >=340 &&
+					    arg0.getX() <= 970 && arg0.getY() <= 380)){
 						this.paintSelectedTrackButton(this.getGraphics(),2);
 						selectedTrack = 2;
 					}
 					// Third Track
-					if(arg0.getX() >= 30 && arg0.getY() >= 390 &&
-					   arg0.getX() <= 30+20 && arg0.getY() <= 390+20) {
+					if((arg0.getX() >= 30 && arg0.getY() >= 390 &&
+					   arg0.getX() <= 30+20 && arg0.getY() <= 390+20) ||
+					   (arg0.getX() >= 80 && arg0.getY() >= 380 &&
+					   arg0.getX() <= 970 && arg0.getY() <= 420)) {
 						this.paintSelectedTrackButton(this.getGraphics(),3);
 						selectedTrack = 3;
 					}
