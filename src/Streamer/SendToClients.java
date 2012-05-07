@@ -24,9 +24,12 @@ public class SendToClients extends Thread {
 				e.printStackTrace();
 			}
 			
-			if ( packet.isFormat() )
+			if ( packet.isFormat() ) {
 				format = packet;
-				//TODO: set all receivers hasFormat = false
+				
+				for (int i=0; i<this.receivers.size(); i++)
+					receivers.get(i).hasFormat = false;
+			}
 			
 			for (int i=0; i<receivers.size(); i++) {
 				if (receivers.get(i).hasFormat)
