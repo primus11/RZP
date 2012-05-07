@@ -1,5 +1,6 @@
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +11,7 @@ import java.util.Vector;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -78,18 +80,61 @@ public class WavAppender {
        
         System.out.println(dolzina1);
         System.out.println(dolzina2);
-        System.out.println(dolzina3); 
-        int i=0;
-        while(true) {
-        	//result[i] = appendedFiles1.[i] + appendedFiles2[i] + appendedFiles3[i];
-        	break;
-        }
-        // TO-DO Zlij AudioInputStream appendedFiles{1,2,3}
-        // v en sam AudioInputStream  
+        System.out.println(dolzina3);
         
-        AudioSystem.write(appendedFiles1, 
-                AudioFileFormat.Type.WAVE, 
-                new File("D:\\wavAppended.wav"));
+        //this checks could be done better
+        if (dolzina2 == 0)
+        	result = appendedFiles1;
+        else if (dolzina3 == 0)
+        	result = merge(appendedFiles1, appendedFiles2);
+        else
+        	result = merge(merge(appendedFiles1, appendedFiles2), appendedFiles3);
+
+		AudioSystem.write(
+				result,
+				AudioFileFormat.Type.WAVE,
+				new File("D:\\wavAppended.wav")
+		);
+		
         System.out.println("File saved.");
+	}
+	
+	static ByteArrayOutputStream getAudioBytes(AudioInputStream audio) {
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		
+		byte[] buf = new byte[1024];
+		int c;
+		try {
+			while ((c = audio.read(buf, 0, buf.length)) != -1)
+				result.write(buf, 0, c);
+			
+			//audio.reset();
+			result.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	static AudioInputStream merge(AudioInputStream audio1, AudioInputStream audio2) {
+		byte[] bytes1 = getAudioBytes(audio1).toByteArray();
+		byte[] bytes2 = getAudioBytes(audio2).toByteArray();
+		
+		ByteArrayOutputStream byteResult = new ByteArrayOutputStream();
+		
+		int maxLength = Math.max(bytes1.length, bytes2.length);
+		for (int i=0; i<maxLength; i++) {
+			if (i >= bytes1.length)
+				byteResult.write(bytes2[i]);
+			else if (i >= bytes2.length)
+				byteResult.write(bytes1[i]);
+			else
+				byteResult.write((bytes1[i]+bytes2[i]) / 2);
+		}
+
+		ByteArrayInputStream bais = new ByteArrayInputStream(byteResult.toByteArray());
+		
+		return new AudioInputStream( bais, audio1.getFormat(), Math.max(audio1.getFrameLength(), audio2.getFrameLength()) );
 	}
 }
