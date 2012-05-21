@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class ChiptuneSample {
 	private int pos_x;
@@ -6,13 +7,25 @@ public class ChiptuneSample {
 	private String filename; //Arcade neki.wav
 	private String name;     //Arcade
 	private Color color;
+	private static ArrayList<String> d = new ArrayList<String>();
+	private static ArrayList<Color> c = new ArrayList<Color>(); 
 	
 	public ChiptuneSample(String filename) {
 		this.filename = filename;
 		String first = filename.split(" ")[0];
-		System.out.println(first);
+		
+		if(!d.contains((String)first)) {
+			d.add(first);
+			c.add(new Color(
+					(int)(Math.random()*150 + 100), 
+					(int)(Math.random()*150 + 100), 
+					(int)(Math.random()*150 + 100),
+					(int)(Math.random()*150 + 100)
+					));
+		}
 		this.name = first;
-		this.color = Color.getHSBColor((float)Math.random()*359, 8, 94);
+		//this.color = Color.getHSBColor((float)Math.random()*359, 8, 94);
+		this.color = c.get(d.indexOf(first));
 	}
 	public void setPosXY(int x, int y) {
 		this.pos_x = x;

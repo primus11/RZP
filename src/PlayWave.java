@@ -87,7 +87,6 @@ public class PlayWave extends Thread {
             auline.drain();
             auline.close();
         } 
- 
     } 
     
     public static double getDurationOfWavInSeconds(File file)
