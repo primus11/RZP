@@ -102,6 +102,7 @@ public class PlayWave extends Thread {
         catch (Exception e) 
         {
             // log an error
+        	e.printStackTrace();
             return -1;
         }
         finally
