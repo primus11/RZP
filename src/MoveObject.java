@@ -104,8 +104,6 @@ public class MoveObject {
 	
 	public void display() {
 		if (this.enabled) {
-			System.out.println("Current X: " + this.currentX);
-			System.out.println("Current Y: " + this.currentY);
 			this.parent.image(this.image, this.currentX, this.currentY, 50, 50);
 		}
 	}
