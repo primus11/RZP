@@ -69,7 +69,7 @@ public class MoveObject {
 		if ((this.direction == 1) && (this.currentY > this.parent.height/2 - 25)) {
 			this.direction = -1;
 		}
-		this.currentY = this.calcTimeRelative() * this.parent.height;
+		this.currentY = this.calcTimeRelative() * this.parent.height * this.direction;
 		//this.currentY += (this.parent.height / this.length) * this.direction;
 		
 		if (this.currentY < -50) {

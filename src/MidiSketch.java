@@ -39,7 +39,7 @@ public class MidiSketch extends PApplet {
 		
 		for(int i=0; i<imgList.size(); i++) {
 			this.images[i] = loadImage(imgList.get(i).toString());
-			this.moveObjects[i] = new MoveObject(this, this.images[i], MoveObject.MOVE_TYPE_FROG, lengths.get(i));
+			this.moveObjects[i] = new MoveObject(this, this.images[i], MoveObject.MOVE_TYPE_ROBOT, lengths.get(i));
 		}
 	}
 	
