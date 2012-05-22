@@ -14,6 +14,7 @@ public class PacketFiller extends Thread {
 	
 	public void run() {
 		while (true) {
+			//System.out.println(queue.size());
 			if (queue.size() < 1000) {
 				try {
 					//Packet packet = this.playlist.getNextPacket();

@@ -29,20 +29,24 @@ public class RecvFromClients extends Thread {
 	public void run() {
 		byte[] buffer = new byte[1024];
 		
+		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+		
 		while (true) {
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-			
 			try {
 				this.socket.receive(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
+			byte[] cmd = packet.getData();
+			
 			InetAddress addr = packet.getAddress();
 			
-			if (buffer[0] == 0 && buffer[1] == 0) 
+			//if (buffer[0] == 0 && buffer[1] == 0)
+			if (Codes.equal(Codes.JOIN, cmd))
 				addReceiver( addr );
-			else if (buffer[0] == 0 && buffer[1] == 1)
+			else if (Codes.equal(Codes.FORMAT, cmd))
+			//else if (buffer[0] == 0 && buffer[1] == 1)
 				formatOK( addr );
 			
 			try {

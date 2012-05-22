@@ -15,8 +15,12 @@ import javax.sound.sampled.DataLine;
 
 public class Packet implements Serializable {
 	//boolean type;
+	public static int nextId = 0;
+	int id;
+	//String test;
 	
 	byte[] nextBytes;
+	//int checkSum;
 	
 	//AudioFormat format;
 	//DataLine.Info info;
@@ -28,7 +32,9 @@ public class Packet implements Serializable {
 		//this.nextBytes = new byte[1];
 		//this.nextBytes[0] = nextByte;
 		this.nextBytes = nextBytes;
-		this.bytes = Utils.ObjToBytes(this);
+		//this.checkSum = sumBytes();
+		//this.bytes = Utils.ObjToBytes(this);
+		init();
 		//byte[] by = Utils.ObjToBytes(this.format);
 	}
 	
@@ -38,7 +44,20 @@ public class Packet implements Serializable {
 		//this.info = info;
 		this.audioFormatInfo = new AudioFormatInfo(format);
 		
+		init();
+	}
+	
+	void init() {
+		//this.test = "danes je lep dan";
+		this.id = Packet.nextId++;
 		this.bytes = Utils.ObjToBytes(this);
+	}
+	
+	public int sumBytes() {
+		int sum = 0;
+		for (int i=0; i<nextBytes.length; i++)
+			sum += nextBytes[i];
+		return sum;
 	}
 	
 	public boolean isFormat() {
@@ -71,5 +90,13 @@ public class Packet implements Serializable {
 	
 	public void send(Receiver receiver) {
 		send(receiver.ip, receiver.port, Server.sndPort);
+	}
+	
+	public void send(Receiver receiver, DatagramSocket tsocket) {
+		send(receiver.ip, receiver.port, tsocket);
+	}
+	
+	public void send(String address, int port, DatagramSocket tsocket) {
+		Utils.sendUDP(this.bytes, address, port, tsocket);
 	}
 }

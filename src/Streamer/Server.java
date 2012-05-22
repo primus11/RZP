@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.sound.sampled.SourceDataLine;
+
 
 public class Server {
 	public static int recvPort = 6545;
@@ -40,11 +42,11 @@ public class Server {
 		
 		this.sendToClients = new SendToClients(this.packetQueue, this.receivers);
 		this.packetFiller = new PacketFiller(this.packetQueue, this.playlist);
-		try {
+		/*try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}
+		}*/
 		this.recvFromClients = new RecvFromClients(this.playlist, this.receivers, Server.recvPort);
 	}
 }
