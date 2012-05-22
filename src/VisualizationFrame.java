@@ -10,7 +10,7 @@ public class VisualizationFrame extends JFrame {
 	
 	private MidiSketch sketch;
 
-	public VisualizationFrame(ArrayList<String> images, ArrayList<Integer> lengths) {
+	public VisualizationFrame(ArrayList<VisualizationObject> objects) {
         this.setSize(340, 350);
         //setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         
@@ -20,7 +20,7 @@ public class VisualizationFrame extends JFrame {
         panel.add(this.sketch);
         this.add(panel);
         
-        this.sketch.initImages(images, lengths);
+        this.sketch.initObjects(objects);
         this.sketch.init();
         
         this.setVisible(true);

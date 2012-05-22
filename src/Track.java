@@ -1,14 +1,29 @@
 import java.io.*;
 import java.util.*;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 public class Track implements Runnable {
 	public int x;
 	public int y;
-	PlayWave pw;
-	ArrayList<String> samples;
-	ArrayList<String> images;
-	ArrayList<Integer> lengths;
-	VisualizationFrame frame;
+	private PlayWave pw;
+	private ArrayList<String> samples;
+	private ArrayList<VisualizationObject> visObjects;
+	private VisualizationFrame frame;
+	
+	enum Position { 
+        LEFT, RIGHT, NORMAL
+    };
+	
+	private Position curPosition;
+    private final int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb
 	
 	public Track(int x, int y) {
 		this.x = x;	
@@ -19,20 +34,9 @@ public class Track implements Runnable {
 	public void addSamplesToTrack(ArrayList<String> samples) {
 		this.samples = samples;
 		
-		this.images = new ArrayList<String>();
-		this.lengths = new ArrayList<Integer>();
-		try {
-			File folder = new File("visualizationImages").getCanonicalFile();
-			File[] listOfFiles = folder.listFiles();
-			for(int i=0;i<samples.size(); i++) {
-				File tmp = listOfFiles[i % listOfFiles.length];
-				if (tmp.isFile()) {
-					this.images.add(tmp.getAbsolutePath());
-					this.lengths.add(Math.max((int) PlayWave.getDurationOfWavInSeconds(new File(samples.get(i))), 1));
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		this.visObjects = new ArrayList<VisualizationObject>();
+		for (int i=0; i<samples.size(); i++) {
+			this.visObjects.add(new VisualizationObject(samples.get(i)));
 		}
 		
 	}
@@ -42,7 +46,7 @@ public class Track implements Runnable {
 	}
 	
 	private void prepareVisualizationFrame() {
-		this.frame = new VisualizationFrame(this.images, this.lengths);
+		this.frame = new VisualizationFrame(this.visObjects);
 	}
 
 	@Override
@@ -52,6 +56,7 @@ public class Track implements Runnable {
 		}
 		
 		for(int i=0;i<samples.size();i++) {
+			/*
 			PlayWave pw = new PlayWave(samples.get(i).toString());
 			pw.start();
 			frame.next();
@@ -60,7 +65,71 @@ public class Track implements Runnable {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			*/
+			frame.next();
+			this.playSound(samples.get(i).toString());
 		}	
+	}
+	
+	private void playSound(String filename) {
+		File soundFile = new File(filename);
+        if (!soundFile.exists()) { 
+            System.err.println("Wave file not found: " + filename);
+            return;
+        } 
+ 
+        AudioInputStream audioInputStream = null;
+        try { 
+            audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+        } catch (UnsupportedAudioFileException e1) { 
+            e1.printStackTrace();
+            return;
+        } catch (IOException e1) { 
+            e1.printStackTrace();
+            return;
+        } 
+ 
+        AudioFormat format = audioInputStream.getFormat();
+        SourceDataLine auline = null;
+        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+ 
+        try { 
+            auline = (SourceDataLine) AudioSystem.getLine(info);
+            auline.open(format);
+        } catch (LineUnavailableException e) { 
+            e.printStackTrace();
+            return;
+        } catch (Exception e) { 
+            e.printStackTrace();
+            return;
+        } 
+ 
+        if (auline.isControlSupported(FloatControl.Type.PAN)) { 
+            FloatControl pan = (FloatControl) auline
+                    .getControl(FloatControl.Type.PAN);
+            if (this.curPosition == Position.RIGHT) 
+                pan.setValue(1.0f);
+            else if (this.curPosition == Position.LEFT) 
+                pan.setValue(-1.0f);
+        } 
+ 
+        auline.start();
+        int nBytesRead = 0;
+        byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
+ 
+        try { 
+            while (nBytesRead != -1) { 
+                nBytesRead = audioInputStream.read(abData, 0, abData.length);
+                if (nBytesRead >= 0) 
+                    auline.write(abData, 0, nBytesRead);
+            } 
+        } catch (IOException e) { 
+            e.printStackTrace();
+            return;
+        } finally { 
+            auline.drain();
+            auline.close();
+        } 
 	}
 	
 }
