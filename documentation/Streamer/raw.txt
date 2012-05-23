@@ -1,0 +1,79 @@
+Streamanje
+
+Streamanje je naèin prenosa pri katerem konèni uporabnik lahko neprestano dostopa do doloèenega vira katerega nek ponudnik ponuja. Pri tem velja, da se lahko sam prikaz zaène še preden je prenesen celoten vir - torej predvajanje filma se lahko zaène še predno imamo cel film na raèunalniku. Primeri razliènih streamanj pa so npr. radio, televizija ali cene delnic.
+
+Za pretok po omrežju je najbolj uporabljen referenèni model TCP/IP, ki velja za de facto standard. Razdeljen je na 4 sloje in v primerjavi s starejšem OSI modelom odstrani prezentacijski in sejni sloj ter združi fizièno in povezavno plast. Višje plasti vedno uporabljajo funkcije nižjih plasti.
+-Naloga fiziène plasti je, da skrbi za fizièni prenos podatkov. 
+-Mrežna plast skrbi za transparentno pošiljanje podatkov med mrežami. Dostava pri tem ni zagotovljena, niti vrstni red dostave. Povezava s povezavnim slojem je protok ARP, ki skrbi za pretvorbo med MAC in IP naslovi.
+-Prenosna plast skrbi za povezavni in brez-povezavni naèin delovanja. Tu najdemo protokola TCP in UDP.
+-Aplikacijska plast služi uporabi standardnih in nestandardnih aplikacij kamor spada tudi naša aplikacija
+
+Streamanje se lahko izvaja na razliènih protokolih, kot sta npr. UDP ali TCP. Za namene zvoka in videa pa tudi obstaja namenski standard RTP v povezavi z RTCP.
+TCP se smatra za zanesljiv protokol s èimer so vsi paketi dostavljeni in so v pravem vrstnem redu. Pri tem se sicer lahko pojavi težava ob veèjih motnjah na omrežju, saj se mora paket takrat še enkrat ali veèkrat poslati s èimer se streamanje ustavi. Zato se v takem primeru ustvari nek buffer, ki to prepreèuje - s tem se sicer ustvari doloèen zamik.
+Druga možnost pa je UDP, ki velja za nezanesljiv protokol, kar pomeni, da ne zagotavlja, da bo paket zagotovo prišel na cilj kot tudi ne, da bodo prišli v pravem vrstnem redu. Te težave se potem rešujejo na nivoju aplikacije, kjer npr. pazimo, da pakete pred predvajanjem uredimo po vrsti.
+
+Primeri drugih tokovnikov so Adobe Flash Player, Windows Media Player, realPlayer, Quick time in drugi. Razlièni ponudniki toka ponavadi ponujajo tako svoje rešitve tokovnikov in vsaj še 2 od prej naštetih za primer internetnega radia. Sami smo se odloèili za izdelavo lastnega tokovnika, ki bo deloval s protokolom UDP.
+
+
+Aplikacija
+
+Paket
+
+Preko medmrežja pošiljamo serializiran objekt Packet, ki služi za prenos zvoka in formata. Med drugim je v paketu tudi nekakšen ID oz. zaporedna številka s katerim se preverja ali je to res naslednji paket. Ob sami konstrukciji se objekt z zvokom oz. formatom pretvori v zapis bajtov, ki se uporabljajo za kasnejše pošiljanje.
+
+Paket - zvok
+
+Komponenta AudioInputStream nam omogoèa, da pretok ne zgolj preusmerimo v izhod za zvok, ampak tudi v tok bajtov do katerih nato lahko dostopamo. S pomoèjo vsebine formata nato lahko vse skupaj razdelimo na doloèene dele, ki jih nato lahko uporabimo za pošiljanje preko tokovnika. Pri tem je pametno, da delom dodelimo pametno velikost, kar lahko na strani klienta vpliva na kakovost zvoka. Pri tem moramo upoštevati izgube, kjer je dobro, da so paketi èim manjši (zaradi primera izgub oz. zamujanja paketov je na zvoku manj izgube, èe so paketi manjši) ter število poslanih paketov, kjer je bolje, da so paketi èim veèji (na ta naèin se vse skupaj pohitri).
+
+Paket - format
+
+AudioInputStream poleg zvoka vsebuje tudi informacijo o formatu v razredu AudioFormat. Sam razred AudioFormat ni serializiran, kar pomeni, da ga ne moramo direktno pretvoriti v bajte ter poslati preko omrežja. Zaradi tega smo izdelali poseben razred, ki omogoèa serializiranje podatov in s tem tudi pretvorbo ter prenos po omrežju.
+
+
+Klient
+
+Klient je sestavljen iz dveh delov:
+-Client za inicializacijo in obdelavo paketov.
+-ClientReceiver za prejemanje paketov.
+
+Inicializacija
+
+Klient ima nalogo, da poleg inicializacije ostalih objektov inicializira tudi nit ClientReceiver, ki služi, da se prejemanje paketov dogaja loèeno neodvisno od ostalega dela. Poleg tega pa ima tudi zelo pomembno nalogo, da pošlje doloèeno zaèetno kodo s èimer oznaèi strežniku, da želi prejemati zvok.
+
+Prejemanje paketov
+
+Prejemanje paketov se dogaja v loèeni niti, kar nam omogoèa loèeno delovanje predvajanja in prejemanja paketov. Na ta naèin se paketi poskušajo, najhitreje prejemati, kar je kljuèno za hitrost predvajanja. Sami prejeti paketi se dodajajo v doloèeno vrsto, ki je v drugi niti spraznjena. Poleg tega ima ta nit tudi nalogo, da v primeru, èe je prejeti paket format, prejetje le tega sporoèi strežniku.
+
+Obdelava paketov
+
+Prvi prejeti paket je paket formata. Le ta je v niti za prejemanje paketov potrjen strežniku, da ne pride do ponovnega pošiljanja. V tej niti pa se ob prejemu formata nastavi izhod na dobljen format, s èimer je v nadaljevanju možen vpis podatkov za zvok.
+Naslednji paketi so paketi z zvokom, kjer je kot prvo potrebno preverjanje ali gre res za naslednji zaporedni paket. Vsi paketi so v osnovi uvršèeni v nek array s katerega se vsakiè vzame najstarejši naslednji paket. Ob tem obstaja tudi možnost, da kakšen paket pride z zamudo, kar pomeni, da ta paket ne bo nikoli predvajan oz., da bo izrisan ob naslednji iteraciji.
+Poleg tega ima klient v tem delu nalogo, da sporoèa ali je morda preveè zasièen. Ob doloèenem presegu minimalnega števila strežniku sporoèi naj zaène hitreje pošiljati pakete oz. ob presegu maksimalnega števila, da naj jih zaène pošiljati poèasneje. S tem se prepreèi, da v primeru, ko strežnik pošilja oz. klient hitreje prejema pakete kot jih klient lahko predvaja, da bi število paketov raslo v neskonènost.
+
+
+Strežnik
+
+Strežnik v osnovi sestoji iz treh glavnih niti, ki služijo za pravilno funkcioniranje aplikacije:
+-PacketFiller, ki skrbi za dodajanje novih paketov.
+-RecvFromClients, ki služi za prejemanje iz strani klientov.
+-SendToClients, ki služi za pošiljanje klientom.
+
+Dodajanje novih paketov
+
+Za pridobivanje novih paketov služi poseben razred Playlist, katera med drugim omogoèa tudi dodajanje novih datotek oz. imenikov. Po odprtju posamezne datoteke se s pomoèjo razreda AudioInputStream kot prvo pridobi format. Za zbiranje paketov služi posebna vrsta kamor je paket formata v nadaljevanju tudi vršèen. Formatu sledi branje posameznih delov zvoka, ki se prav tako v obliki paketa zapišejo v prej omenjeno vrsto. Po koncu doloèene datoteke ima razred Playlist tudi nalogo, da odpre novo datoteko, kjer je tudi glavna možnost razširitve, ki bi npr. omogoèala glasovanje za naslednjo skladbo.
+
+Prejemanje od klientov
+
+Zaradi razliènih potreb komunikacije strežnik tudi prejema pakete iz strani klientov. Sami klienti so identificirani z ip naslovom, kar bi v primeru poslušanja z istega IP naslova prineslo težave. V nadaljevanju bi bila tako potrebna dodatna identifikacija, ki ne bi delovala zgolj na IP naslov, ampak bi se npr. klientu iz strani strežnika dodelila doloèena številka. V uporabi so naslednje naloge:
+-Strežnik v osnovi ne ve komu mora pošiljati pakete, kar pomeni, da mu mora le to sporoèiti klient. Znotraj te zanke zato strežnik prejema pakete in v primeru zahtevka za prikljuèitev zaène pošiljati pakete klientu.
+-Dodatno se v tej zanki tudi prejema ali je klient uspešno prejel format. Potrditev le tega je potrebna, da ga strežnik ne pošilja ponovno, kar je popolnoma nepotrebno in bi zgolj obremenjevalo linijo.
+-Zaradi napaène hitrosti pošiljanja se lahko na strani klienta pojavi problem nasièenja ali da mu primankuje paketov za predvajanje. V obeh problemih zaradi tega lahko pride do neželenega uèinka poèasnega igranja ali prekinjanja. V prvem primeru zaradi preobremenitve, medtem ko pri drugem ta uèinek lahko nastane, ker se paketi prepoèasi predvajajo. Zaradi tega ima strežnik tudi dodatno nalogo, da spremlja, èe mu klient pošlje zahtevek za poèasnejše ali hitrejše pošiljanje. Vse skupaj je pri tem omejeno na doloèeno minimalno in maksimalno vrednost, saj bi v nasprotnem primeru nekdo to lahko izkoristil kot varnostno luknjo ter zasièil ali zaustavil predvajanje pri klientih.
+
+Pošiljanje klientom
+
+Za vsakega prikljuèenega klienta se v tej niti pošiljajo paketi. Posamezen paket se vzame iz vrste, kjer so paketi nato pa se le ta pošlje klientom. V primeru, ko se za klienta ugotovi, da ni potrdil formata se mu pošlje le ta.
+
+
+viri:
+en.wikipedia.org/wiki/Streaming_media
+Trèek Denis., Raèunalniška zvoèna produkcija, kopije prosojnic, FRI UL, Ljubljana 2011
