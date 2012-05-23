@@ -126,7 +126,7 @@
 % *** GRAPHICS RELATED PACKAGES ***
 %
 \ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
+  \usepackage[pdftex]{graphicx}
   % declare the path(s) where your graphic files are
   % \graphicspath{{../pdf/}{../jpeg/}}
   % and their extensions so you won't have to specify these with
@@ -562,6 +562,16 @@ Primeri drugih tokovnikov so Adobe Flash Player, Windows Media Player, realPlaye
 %\hfill Maj 23, 2011
 
 \section{Opis programske rešitve}
+
+Slika \ref{sestava} prikazuje sestavo programske rešitve, ki je opisana v nadaljevanju.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=2.5in]{sestava.png}
+%\includegraphics{streamer.pdf}
+\caption{Prikaz sestave programske rešitve}
+\label{sestava}
+\end{figure}
 
 \subsection{Paket}
 Preko medmrežja pošiljamo serializiran objekt Packet, ki služi za prenos zvoka in formata. Med drugim je v paketu tudi nekakšen ID oz. zaporedna številka s katerim se preverja ali je to res naslednji paket. Ob sami konstrukciji se objekt z zvokom oz. formatom pretvori v zapis bajtov, ki se uporabljajo za kasnejše pošiljanje.
