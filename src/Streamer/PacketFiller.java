@@ -27,19 +27,13 @@ public class PacketFiller extends Thread {
 	
 	public void run() {
 		while (true) {
-			//System.out.println(queue.size());
 			if (queue.size() < 1000) {
 				try {
-					//Packet packet = this.playlist.getNextPacket();
-					//packet.bytes = Utils.ObjToBytes(packet);
-					//queue.put(packet);
 					queue.put(this.playlist.getNextPacket());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
-			//else
-				//sleep
 			
 			try {
 				Thread.sleep(this.sleep);

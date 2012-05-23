@@ -9,7 +9,6 @@ import java.util.ArrayList;
 
 public class RecvFromClients extends Thread {
 	Playlist playlist;
-	//Receiver[] receivers;
 	ArrayList<Receiver> receivers;
 	DatagramSocket socket;
 	PacketFiller packetFiller;
@@ -44,11 +43,9 @@ public class RecvFromClients extends Thread {
 			
 			InetAddress addr = packet.getAddress();
 			
-			//if (buffer[0] == 0 && buffer[1] == 0)
 			if (Codes.equal(Codes.JOIN, cmd))
 				addReceiver( addr );
 			else if (Codes.equal(Codes.FORMAT, cmd))
-			//else if (buffer[0] == 0 && buffer[1] == 1)
 				formatOK( addr );
 			else if (Codes.equal(Codes.FASTER, cmd)) //TODO: should be allowed only once per few seconds for security
 				this.packetFiller.faster();

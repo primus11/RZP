@@ -13,7 +13,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-//import PlayWave.Position;
 
 class Sound
 {
@@ -83,25 +82,11 @@ public class Playlist
 	}
 	
 	void nextFile() {
-		/*try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}*/
-		
-		/*if (auline != null && auline.isOpen()) {
-			System.out.println("se");
-			auline.drain();
-			auline.stop();
-			auline.close();
-		}*/
-		
 		soundFile = new File(sounds.get(pointer++).filename);
 		if (pointer >= sounds.size())
 			pointer = 0;
 		
 		try {
-			//System.out.println(sounds.get(pointer-1).filename);
 			audioInputStream = AudioSystem.getAudioInputStream(soundFile);
 		} catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
@@ -110,46 +95,14 @@ public class Playlist
 		}
 		
 		format = audioInputStream.getFormat();
-		
-		
-		
-		/*auline = null;
-		
-		try {
-			//AudioFormat format = format;
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, format, 
-					(int)audioInputStream.getFrameLength()*format.getFrameSize());
-			auline = (SourceDataLine) AudioSystem.getLine(info);
-			auline.open(format);
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		}
-		curPosition = Position.NORMAL;
-        if (auline.isControlSupported(FloatControl.Type.PAN)) { 
-            FloatControl pan = (FloatControl) auline
-                    .getControl(FloatControl.Type.PAN);
-            if (curPosition == Position.RIGHT) 
-                pan.setValue(1.0f);
-            else if (curPosition == Position.LEFT) 
-                pan.setValue(-1.0f);
-        } 
-		auline.start();
-		
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
 	}
 	
 	public Packet getNextPacket() {
-		//byte[] nextBytes = new byte[64];
 		byte[] nextBytes = new byte[200];
 		int nBytes = -1;
 		
 		if (!firstTime)
 			try {
-				//nextBytes = new byte[auline.getBufferSize()];
 				nBytes = audioInputStream.read(nextBytes, 0, nextBytes.length);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -157,32 +110,17 @@ public class Playlist
 		else
 			firstTime = false;
 			
-		//if (nextByte == -1) {
 		if (nBytes < 0) {
 			nextFile();
-			//return new Packet(this.format, this.info);
 			return new Packet(this.format);
 		}
 		
 		if (nBytes != nextBytes.length)
 			nextBytes = cut(nextBytes, nBytes);
 		
-		
-		//System.out.println(nextBytes.length);
 		Packet packet = new Packet(nextBytes);
 		
-		//packet = (Packet) Utils.bytesToObj(Utils.ObjToBytes(packet));
-		
-		//auline.write(packet.nextBytes, 0, packet.nextBytes.length);
-		
-		/*System.out.println("server: " + packet.nextBytes + " " + packet.id);
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}*/
-		
-		return packet;//new Packet(nextBytes);
+		return packet;
 	}
 	
 	byte[] cut(byte[] bytes, int size) {
@@ -193,7 +131,6 @@ public class Playlist
 	}
 	
 	public Packet getFormatPacket() {
-		//return new Packet(this.format, this.info);
 		return new Packet(this.format);
 	}
 }

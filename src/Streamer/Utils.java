@@ -46,7 +46,6 @@ public class Utils {
 	
 	public static void sendUDP(byte[] bytes, String address, int recvPort, DatagramSocket tsocket) {
 		DatagramPacket packet = null;
-		//System.out.println(bytes.length);
 		try {
 			packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(address), recvPort);
 		} catch (UnknownHostException e) {
