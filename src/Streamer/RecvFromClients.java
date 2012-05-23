@@ -12,10 +12,12 @@ public class RecvFromClients extends Thread {
 	//Receiver[] receivers;
 	ArrayList<Receiver> receivers;
 	DatagramSocket socket;
+	PacketFiller packetFiller;
 	
-	public RecvFromClients(Playlist playlist, ArrayList receivers, int recvPort) {
+	public RecvFromClients(Playlist playlist, ArrayList receivers, int recvPort, PacketFiller packetFiller) {
 		this.playlist = playlist;
 		this.receivers = receivers;
+		this.packetFiller = packetFiller;
 
 		try {
 			this.socket = new DatagramSocket(recvPort);
@@ -48,6 +50,10 @@ public class RecvFromClients extends Thread {
 			else if (Codes.equal(Codes.FORMAT, cmd))
 			//else if (buffer[0] == 0 && buffer[1] == 1)
 				formatOK( addr );
+			else if (Codes.equal(Codes.FASTER, cmd)) //TODO: should be allowed only once per few seconds for security
+				this.packetFiller.faster();
+			else if (Codes.equal(Codes.SLOWER, cmd)) //TODO: should be allowed only once per few seconds for security
+				this.packetFiller.slower();
 			
 			try {
 				Thread.sleep(1);

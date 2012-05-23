@@ -62,7 +62,7 @@ public class Playlist
 		addFile("D:\\wavAppended.wav");
 		addFile("D:\\wavAppended.wav");
 		addFile("D:\\wavAppended.wav");
-		addFolder(System.getProperty("user.dir") + "\\src\\chiptune\\");
+		//addFolder(System.getProperty("user.dir") + "\\src\\chiptune\\");
 	}   
 	
 	public void addFile(String filename) {

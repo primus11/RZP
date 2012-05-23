@@ -47,6 +47,6 @@ public class Server {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}*/
-		this.recvFromClients = new RecvFromClients(this.playlist, this.receivers, Server.recvPort);
+		this.recvFromClients = new RecvFromClients(this.playlist, this.receivers, Server.recvPort, this.packetFiller);
 	}
 }
