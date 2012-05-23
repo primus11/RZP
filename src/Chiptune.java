@@ -23,9 +23,8 @@ public class Chiptune extends Applet implements MouseListener {
 	Player player;
 	
 	public void init() {
-		Toolkit t = Toolkit.getDefaultToolkit();
-		Dimension d = t.getScreenSize();
-			
+		//Toolkit t = Toolkit.getDefaultToolkit();
+		//Dimension d = t.getScreenSize();	
 		//this.setSize(d.width-16, d.height);
 		this.setSize(1008, 600);
 			File folder;

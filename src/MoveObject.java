@@ -28,6 +28,7 @@ public class MoveObject {
 	protected float length;
 	protected float imgWidth, imgHeight;
 	protected boolean scaling;
+	protected float angle;
 	
 	protected long startTime;
 	protected boolean timing;
@@ -52,6 +53,8 @@ public class MoveObject {
 		this.currentX = 0;
 		this.currentY = 0;
 		
+		this.angle = 0;
+		
 		this.enabled = false;
 		this.timing = false;
 		this.scaling = false;
@@ -72,12 +75,12 @@ public class MoveObject {
 				break;
 			case MOVE_TYPE_BEAM:
 			case MOVE_TYPE_ELECTRIC:
-				this.imgWidth = this.parent.width;
-				this.imgHeight = this.parent.height;
+				this.imgWidth = 300;
+				this.imgHeight = 300;
 				break;
 			case MOVE_TYPE_CHUCK:
-				this.imgWidth = (float) 1.8 * DEFAULT_IMAGE_SIZE;
-				this.imgHeight = (float) 1.8 * DEFAULT_IMAGE_SIZE;
+				this.imgWidth = (float) 2.0 * DEFAULT_IMAGE_SIZE;
+				this.imgHeight = (float) 2.0 * DEFAULT_IMAGE_SIZE;
 				break;
 			case MOVE_TYPE_BALL:
 				this.imgWidth = (float) 0.6 * DEFAULT_IMAGE_SIZE;
@@ -130,8 +133,8 @@ public class MoveObject {
 		this.currentY = this.parent.height/2 - (PApplet.sin(PApplet.radians(angle))*20) - 70;
 		
 		if (this.scaling) {
-			this.imgWidth = (float) (0.6 * this.currentY);
-			this.imgHeight = this.imgWidth;
+			this.imgWidth = (float) (this.currentY > this.parent.height/2 - 70 ? 0.8 * this.currentY : 0.4 * this.currentY);
+			this.imgHeight = (float) (this.currentY > this.parent.height/2 - 70 ? 0.8 * this.currentY : 0.4 * this.currentY);
 		}
 		
 		if (this.currentX > this.parent.width + this.imgWidth) {
@@ -139,16 +142,36 @@ public class MoveObject {
 		}
 	}
 	
+	private void moveFullScreen() {
+		if (this.enabled && (this.calcTimeRelative() > 1.0)) {
+			this.enabled = false;
+		}
+	}
+	
 	private void moveRotation() {
-		float angle = PApplet.PI/2 * this.calcTimeRelative();
-		if ((this.direction == 1) && (angle > PApplet.PI/4)) {
-			this.direction = -1;
+		float relative = this.calcTimeRelative();		
+		this.currentX = this.parent.width/2 - this.imgWidth/2;
+		this.currentY = this.parent.height/2 - this.imgHeight/2;
+		
+		if (relative < 0.5) {
+			//moving down
+			this.angle = 50 * relative;
+			this.currentX += this.imgWidth * relative;
+			this.currentY += this.imgHeight * relative;
+		} else if (relative > 0.5 && relative < 0.6) {
+			//down position
+			this.angle = 50;
+			this.currentX = this.parent.width/2 + this.imgWidth/2;
+			this.currentY = this.parent.height/2 + this.imgHeight/2;
+		} else if (this.angle > 50) {
+			this.angle = 0;
+		} else if (this.angle > 0) {
+			this.angle = 360 - this.angle;
 		}
 		
-		this.parent.pushMatrix();
-		this.parent.rotate(PApplet.radians(angle));
-		this.parent.image(this.image, this.parent.width/2, this.parent.height/2, this.imgWidth, this.imgHeight);
-		this.parent.popMatrix();
+		if (relative > 1.0) {
+			this.enabled = false;
+		}
 	}
 	
 	private void moveMiddleSinusoid() {
@@ -158,20 +181,6 @@ public class MoveObject {
 		this.currentY = this.parent.height/2 - (PApplet.sin(PApplet.radians(angle))*35);
 		
 		if (this.currentX > this.parent.width + this.imgWidth) {
-			this.enabled = false;
-		}
-	}
-	
-	private void moveHelicopter() {
-		this.currentX = this.parent.width/2 - this.imgWidth/2;
-		
-		if ((this.direction == 1) && (this.currentY > this.parent.height/2 - this.imgHeight/2)) {
-			this.direction = -1;
-		}
-		this.currentY = this.calcTimeRelative() * this.parent.height * this.direction;
-		//this.currentY += (this.parent.height / this.length) * this.direction;
-		
-		if (this.currentY < -this.imgHeight) {
 			this.enabled = false;
 		}
 	}
@@ -193,7 +202,7 @@ public class MoveObject {
 					break;
 				case MOVE_TYPE_BEAM:
 				case MOVE_TYPE_ELECTRIC:
-					//nothing to move, only display
+					this.moveFullScreen();
 					break;
 				case MOVE_TYPE_BOMB:
 				case MOVE_TYPE_BUBBLE:
@@ -201,13 +210,13 @@ public class MoveObject {
 				case MOVE_TYPE_STAR:
 					this.moveRandomSinusoid();
 					break;
-				case MOVE_TYPE_CHUCK:
 				case MOVE_TYPE_NOISE:
 					this.moveMiddleTrack();
 					break;
 				case MOVE_TYPE_HAMMER:
-					//this.moveRotation();
+					this.moveRotation();
 					break;
+				case MOVE_TYPE_CHUCK:
 				case MOVE_TYPE_HELICOPTER:
 				case MOVE_TYPE_UFO:
 					this.moveMiddleSinusoid();
@@ -227,19 +236,14 @@ public class MoveObject {
 	public void display() {
 		if (this.enabled) {
 			/*
-			if (this.scaling) {
-				this.direction = (Math.random() > 0.5 ? -this.direction : this.direction);
-				
-				float scaleFactor = (float) (0.5 * this.direction);
-				this.imgWidth += this.imgWidth * scaleFactor;
-				this.imgHeight += this.imgHeight * scaleFactor;
-				
-				this.imgWidth = Math.max(Math.min(this.imgWidth, 100), 20);
-				this.imgHeight = Math.max(Math.min(this.imgHeight, 100), 20);
-			}
+			System.out.println("ANGLE: " + this.angle);
+			System.out.println("CURRENT X: " + this.currentX);
+			System.out.println("CURRENT Y: " + this.currentY);
 			*/
 			this.parent.pushMatrix();
-			this.parent.image(this.image, this.currentX, this.currentY, this.imgWidth, this.imgHeight);
+			this.parent.translate(this.currentX, this.currentY);
+			this.parent.rotate(PApplet.radians(this.angle));
+			this.parent.image(this.image, 0, 0, this.imgWidth, this.imgHeight);
 			this.parent.popMatrix();
 		}
 	}
