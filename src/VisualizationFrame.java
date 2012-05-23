@@ -11,7 +11,7 @@ public class VisualizationFrame extends JFrame {
 	private MidiSketch sketch;
 
 	public VisualizationFrame(ArrayList<VisualizationObject> objects) {
-        this.setSize(340, 350);
+		this.setSize(340, 350);
         //setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         
         JPanel panel = new JPanel();

@@ -13,7 +13,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Track implements Runnable {
 	public int x;
 	public int y;
-	private PlayWave pw;
+	//private PlayWave pw;
 	private ArrayList<String> samples;
 	private ArrayList<VisualizationObject> visObjects;
 	private VisualizationFrame frame;
@@ -67,7 +67,13 @@ public class Track implements Runnable {
 			}
 			*/
 			frame.next();
-			this.playSound(samples.get(i).toString());
+			String sample = samples.get(i).toString();
+			this.playSound(sample);
+			try {
+				Thread.sleep((long) (PlayWave.getDurationOfWavInSeconds(new File(sample)) * 1000 * 1.01));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}	
 	}
 	
