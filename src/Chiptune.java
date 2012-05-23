@@ -1,14 +1,8 @@
-import java.applet.Applet;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Toolkit;
-import java.awt.event.InputEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.applet.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JOptionPane;

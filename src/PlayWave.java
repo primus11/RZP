@@ -1,13 +1,5 @@
-import java.io.File; 
-import java.io.IOException; 
-import javax.sound.sampled.AudioFormat; 
-import javax.sound.sampled.AudioInputStream; 
-import javax.sound.sampled.AudioSystem; 
-import javax.sound.sampled.DataLine; 
-import javax.sound.sampled.FloatControl; 
-import javax.sound.sampled.LineUnavailableException; 
-import javax.sound.sampled.SourceDataLine; 
-import javax.sound.sampled.UnsupportedAudioFileException; 
+import java.io.*;  
+import javax.sound.sampled.*; 
  
 public class PlayWave extends Thread { 
     private String filename;
@@ -101,6 +93,7 @@ public class PlayWave extends Thread {
         catch (Exception e) 
         {
             // log an error
+        	e.printStackTrace();
             return -1;
         }
         finally
