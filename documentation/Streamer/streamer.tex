@@ -480,10 +480,13 @@ glasba, ki se je pojavila več kot desetletje v preteklosti in sega celo v prej�
 V nadaljevanju je predstavljen tokovnik za prenos že ustvarjene glasbe, ki je bil
 razvit kot del celotnega projekta.
 \end{abstract}
+
 % Note that keywords are not normally used for peerreview papers.
+\def\IEEEkeywordsname{Ključne besede}
 \begin{IEEEkeywords}
-Tokovnik, chiptune, prenos podatkov
+Tokovnik, chiptune, streamanje podatkov
 \end{IEEEkeywords}
+\def\IEEEkeywordsname{Index Terms}
 
 \selectlanguage{english}
 \begin{abstract}
@@ -555,7 +558,7 @@ TCP se smatra za zanesljiv protokol s čimer so vsi paketi dostavljeni in so v p
 
 Druga možnost pa je UDP, ki velja za nezanesljiv protokol, kar pomeni, da ne zagotavlja, da bo paket zagotovo prišel na cilj kot tudi ne, da bodo prišli v pravem vrstnem redu. Te težave se potem rešujejo na nivoju aplikacije, kjer npr. pazimo, da pakete pred predvajanjem uredimo po vrsti.
 
-Primeri drugih tokovnikov so Adobe Flash Player, Windows Media Player, realPlayer, Quick time in drugi. Različni ponudniki toka ponavadi ponujajo tako svoje rešitve tokovnikov in vsaj še 2 od prej naštetih za primer internetnega radia. Sami smo se odločili za izdelavo lastnega tokovnika, ki bo deloval s protokolom UDP.
+Primeri drugih tokovnikov so Adobe Flash Player, Windows Media Player, RealPlayer, Quick time in drugi. Različni ponudniki toka ponavadi ponujajo tako svoje rešitve tokovnikov in vsaj še 2 od prej naštetih za primer internetnega radia. Sami smo se odločili za izdelavo lastnega tokovnika, ki bo deloval s protokolom UDP.
 
 %\hfill mds
  
@@ -618,7 +621,7 @@ Strežnik v osnovi sestoji iz treh glavnih niti, ki služijo za pravilno funkcio
 
 \subsection{Dodajanje novih paketov}
 
-Za pridobivanje novih paketov služi poseben razred Playlist, katera med drugim omogoča tudi dodajanje novih datotek oz. imenikov. Po odprtju posamezne datoteke se s pomočjo razreda AudioInputStream kot prvo pridobi format. Za zbiranje paketov služi posebna vrsta kamor je paket formata v nadaljevanju tudi vrščen. Formatu sledi branje posameznih delov zvoka, ki se prav tako v obliki paketa zapišejo v prej omenjeno vrsto. Po koncu določene datoteke ima razred Playlist tudi nalogo, da odpre novo datoteko, kjer je tudi glavna možnost razširitve, ki bi npr. omogočala glasovanje za naslednjo skladbo.
+Za pridobivanje novih paketov služi poseben razred Playlist, katera med drugim omogoča tudi dodajanje novih datotek oz. imenikov. Po odprtju posamezne datoteke se s pomočjo razreda AudioInputStream kot prvo pridobi format. Za zbiranje paketov služi posebna vrsta kamor je paket formata v nadaljevanju tudi uvrščen. Formatu sledi branje posameznih delov zvoka, ki se prav tako v obliki paketa zapišejo v prej omenjeno vrsto. Po koncu določene datoteke ima razred Playlist tudi nalogo, da odpre novo datoteko, kjer je tudi glavna možnost razširitve, ki bi npr. omogočala glasovanje za naslednjo skladbo.
 
 \subsection{Prejemanje s strani klientov}
 
