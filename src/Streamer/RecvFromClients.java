@@ -9,13 +9,14 @@ import java.util.ArrayList;
 
 public class RecvFromClients extends Thread {
 	Playlist playlist;
-	//Receiver[] receivers;
 	ArrayList<Receiver> receivers;
 	DatagramSocket socket;
+	PacketFiller packetFiller;
 	
-	public RecvFromClients(Playlist playlist, ArrayList receivers, int recvPort) {
+	public RecvFromClients(Playlist playlist, ArrayList receivers, int recvPort, PacketFiller packetFiller) {
 		this.playlist = playlist;
 		this.receivers = receivers;
+		this.packetFiller = packetFiller;
 
 		try {
 			this.socket = new DatagramSocket(recvPort);
@@ -29,21 +30,27 @@ public class RecvFromClients extends Thread {
 	public void run() {
 		byte[] buffer = new byte[1024];
 		
+		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+		
 		while (true) {
-			DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-			
 			try {
 				this.socket.receive(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
+			byte[] cmd = packet.getData();
+			
 			InetAddress addr = packet.getAddress();
 			
-			if (buffer[0] == 0 && buffer[1] == 0) 
+			if (Codes.equal(Codes.JOIN, cmd))
 				addReceiver( addr );
-			else if (buffer[0] == 0 && buffer[1] == 1)
+			else if (Codes.equal(Codes.FORMAT, cmd))
 				formatOK( addr );
+			else if (Codes.equal(Codes.FASTER, cmd)) //TODO: should be allowed only once per few seconds for security
+				this.packetFiller.faster();
+			else if (Codes.equal(Codes.SLOWER, cmd)) //TODO: should be allowed only once per few seconds for security
+				this.packetFiller.slower();
 			
 			try {
 				Thread.sleep(1);

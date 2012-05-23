@@ -44,6 +44,21 @@ public class Utils {
 		return bos.toByteArray();
 	}
 	
+	public static void sendUDP(byte[] bytes, String address, int recvPort, DatagramSocket tsocket) {
+		DatagramPacket packet = null;
+		try {
+			packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(address), recvPort);
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			tsocket.send(packet);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static void sendUDP(byte[] bytes, String address, int recvPort, int sndPort) {
 		DatagramSocket tsocket = null;
 		try {
@@ -66,5 +81,12 @@ public class Utils {
 		}
 		
 		tsocket.close();
+	}
+	
+	public static byte[] truncate(byte[] bytes, int size) {
+		byte[] result = new byte[size];
+		for (int i=0; i<size; i++)
+			result[i] = bytes[i];
+		return result;
 	}
 }

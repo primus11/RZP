@@ -17,6 +17,9 @@ public class AudioFormatInfo implements Serializable {
 		this.channels = format.getChannels();
 		this.signed = true; //??
 		this.bigEndian = format.isBigEndian();
+		
+		//System.out.println( format.toString() );
+		//System.out.println( format.matches(getAudioFormat()) );
 	}
 	
 	public AudioFormat getAudioFormat() {

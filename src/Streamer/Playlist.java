@@ -8,8 +8,11 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
 
 class Sound
 {
@@ -36,16 +39,30 @@ public class Playlist
 	protected AudioInputStream audioInputStream;
 	
 	AudioFormat format;
-	DataLine.Info info;
+	//DataLine.Info info;
 	byte[] fileBytes;
 	
 	boolean firstTime = true;
 	
+	SourceDataLine auline = null;//for testing
+	private Position curPosition;
+	
+	enum Position { 
+        LEFT, RIGHT, NORMAL
+    };
+	
 	Playlist() {
 		sounds = new ArrayList<Sound>();
 		addFile("D:\\wavAppended.wav");
-		addFolder(System.getProperty("user.dir") + "\\src\\chiptune\\");
-	}
+		addFile("D:\\wavAppended.wav");
+		addFile("D:\\wavAppended.wav");
+		addFile("D:\\wavAppended.wav");
+		addFile("D:\\wavAppended.wav");
+		addFile("D:\\wavAppended.wav");
+		addFile("D:\\wavAppended.wav");
+		addFile("D:\\wavAppended.wav");
+		//addFolder(System.getProperty("user.dir") + "\\src\\chiptune\\");
+	}   
 	
 	public void addFile(String filename) {
 		sounds.add(new Sound(filename));
@@ -92,26 +109,28 @@ public class Playlist
 			}
 		else
 			firstTime = false;
-		
-		if (nBytes != nextBytes.length && nBytes > 0) {
-			byte[] tmp = new byte[nBytes];
-			for (int i=0; i<nBytes; i++)
-				tmp[i] = nextBytes[i];
-			nextBytes = tmp;
-		}
 			
-		//if (nextByte == -1) {
-		if (nBytes == -1) {
+		if (nBytes < 0) {
 			nextFile();
-			//return new Packet(this.format, this.info);
 			return new Packet(this.format);
 		}
 		
-		return new Packet(nextBytes);
+		if (nBytes != nextBytes.length)
+			nextBytes = cut(nextBytes, nBytes);
+		
+		Packet packet = new Packet(nextBytes);
+		
+		return packet;
+	}
+	
+	byte[] cut(byte[] bytes, int size) {
+		byte[] result = new byte[size];
+		for (int i=0; i<size; i++)
+			result[i] = bytes[i];
+		return result;
 	}
 	
 	public Packet getFormatPacket() {
-		//return new Packet(this.format, this.info);
 		return new Packet(this.format);
 	}
 }
