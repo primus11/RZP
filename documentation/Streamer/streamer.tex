@@ -477,21 +477,24 @@
 %\boldmath
 Včasih nas nostalgija lahko ponese nekaj let ali celo desetletje v preteklost. Chiptune je
 glasba, ki se je pojavila več kot desetletje v preteklosti in sega celo v prejšnje tisočletje.
-V nadaljevanju je predstavljen le del, ki je bil razvit in predstavlja tokovnik za prenos
-že ustvarjene glasbe.
+V nadaljevanju je predstavljen tokovnik za prenos že ustvarjene glasbe, ki je bil
+razvit kot del celotnega projekta.
 \end{abstract}
+
 % Note that keywords are not normally used for peerreview papers.
+\def\IEEEkeywordsname{Ključne besede}
 \begin{IEEEkeywords}
-Tokovnik, chiptune, splet
+Tokovnik, chiptune, streamanje podatkov
 \end{IEEEkeywords}
+\def\IEEEkeywordsname{Index Terms}
 
 \selectlanguage{english}
 \begin{abstract}
 %\boldmath
-Nostalgy can sometimes take us few years or even a decade into the past. Chiptune is
-an example of music, which appeared more than decade ago and reaches even into
-the previous millennium. In this paper streamer is presented which is part
-of the whole project.
+every once in a while, nostalgy can takes us few years or even a decade
+back into the time. Chiptune is an example of a music that appeared more
+than a decade ago and it goes back even into the previous millennium. In
+this paper streamer as the part of the whole project is presented.
 \end{abstract}
 % IEEEtran.cls defaults to using nonbold math in the Abstract.
 % This preserves the distinction between vectors and scalars. However,
@@ -502,7 +505,7 @@ of the whole project.
 
 % Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-Streamer, chiptune, network
+Streamer, chiptune, data streaming
 \end{IEEEkeywords}
 
 
@@ -555,7 +558,7 @@ TCP se smatra za zanesljiv protokol s čimer so vsi paketi dostavljeni in so v p
 
 Druga možnost pa je UDP, ki velja za nezanesljiv protokol, kar pomeni, da ne zagotavlja, da bo paket zagotovo prišel na cilj kot tudi ne, da bodo prišli v pravem vrstnem redu. Te težave se potem rešujejo na nivoju aplikacije, kjer npr. pazimo, da pakete pred predvajanjem uredimo po vrsti.
 
-Primeri drugih tokovnikov so Adobe Flash Player, Windows Media Player, realPlayer, Quick time in drugi. Različni ponudniki toka ponavadi ponujajo tako svoje rešitve tokovnikov in vsaj še 2 od prej naštetih za primer internetnega radia. Sami smo se odločili za izdelavo lastnega tokovnika, ki bo deloval s protokolom UDP.
+Primeri drugih tokovnikov so Adobe Flash Player, Windows Media Player, RealPlayer, Quick time in drugi. Različni ponudniki toka ponavadi ponujajo tako svoje rešitve tokovnikov in vsaj še 2 od prej naštetih za primer internetnega radia. Sami smo se odločili za izdelavo lastnega tokovnika, ki bo deloval s protokolom UDP.
 
 %\hfill mds
  
@@ -618,7 +621,7 @@ Strežnik v osnovi sestoji iz treh glavnih niti, ki služijo za pravilno funkcio
 
 \subsection{Dodajanje novih paketov}
 
-Za pridobivanje novih paketov služi poseben razred Playlist, katera med drugim omogoča tudi dodajanje novih datotek oz. imenikov. Po odprtju posamezne datoteke se s pomočjo razreda AudioInputStream kot prvo pridobi format. Za zbiranje paketov služi posebna vrsta kamor je paket formata v nadaljevanju tudi vrščen. Formatu sledi branje posameznih delov zvoka, ki se prav tako v obliki paketa zapišejo v prej omenjeno vrsto. Po koncu določene datoteke ima razred Playlist tudi nalogo, da odpre novo datoteko, kjer je tudi glavna možnost razširitve, ki bi npr. omogočala glasovanje za naslednjo skladbo.
+Za pridobivanje novih paketov služi poseben razred Playlist, katera med drugim omogoča tudi dodajanje novih datotek oz. imenikov. Po odprtju posamezne datoteke se s pomočjo razreda AudioInputStream kot prvo pridobi format. Za zbiranje paketov služi posebna vrsta kamor je paket formata v nadaljevanju tudi uvrščen. Formatu sledi branje posameznih delov zvoka, ki se prav tako v obliki paketa zapišejo v prej omenjeno vrsto. Po koncu določene datoteke ima razred Playlist tudi nalogo, da odpre novo datoteko, kjer je tudi glavna možnost razširitve, ki bi npr. omogočala glasovanje za naslednjo skladbo.
 
 \subsection{Prejemanje s strani klientov}
 
@@ -792,6 +795,8 @@ pri različnih drugih tokovnikih.
 
 \nocite{prosojnice2011}
 \nocite{wikism}
+
+\selectlanguage{slovene}
 
 \bibliographystyle{IEEEtran}
 \bibliography{references}
