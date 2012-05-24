@@ -69,11 +69,13 @@ public class Track implements Runnable {
 			frame.next();
 			String sample = samples.get(i).toString();
 			this.playSound(sample);
+			/*
 			try {
-				Thread.sleep((long) (PlayWave.getDurationOfWavInSeconds(new File(sample)) * 1000 * 1.01));
+				Thread.sleep((long) (PlayWave.getDurationOfWavInSeconds(new File(sample)) * 1000 * 0.8));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			*/
 		}	
 	}
 	
